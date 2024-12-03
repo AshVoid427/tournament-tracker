@@ -1,69 +1,54 @@
-function showSection(section) {
-  const content = document.getElementById("content");
+// Store player names in an array
+let players = [];
 
-  if (section === "brackets") {
-    content.innerHTML = `
-      <h2>Tournament Brackets</h2>
-      <form id="bracketForm">
-        <input type="text" id="player1" placeholder="Player 1" class="form-control my-2">
-        <input type="text" id="player2" placeholder="Player 2" class="form-control my-2">
-        <button type="button" class="btn btn-primary" onclick="generateBracket()">Generate Bracket</button>
-      </form>
-      <div id="bracketOutput" class="mt-4"></div>
-    `;
-  } else if (section === "rankings") {
-    content.innerHTML = `
-      <h2>Time Trial Rankings</h2>
-      <form id="rankingsForm">
-        <input type="text" id="playerName" placeholder="Player Name" class="form-control my-2">
-        <input type="text" id="playerTime" placeholder="Time (e.g., 1:30)" class="form-control my-2">
-        <button type="button" class="btn btn-primary" onclick="addRanking()">Add Ranking</button>
-      </form>
-      <ul id="rankingsList" class="mt-4 list-group"></ul>
-    `;
-  } else if (section === "trivia") {
-    content.innerHTML = `
-      <h2>Trivia</h2>
-      <p>More content coming soon!</p>
-    `;
+// Add a player to the list
+function addPlayer(event) {
+  event.preventDefault(); // Prevent form submission
+  const playerNameInput = document.getElementById("playerName");
+  const playerName = playerNameInput.value.trim();
+
+  if (playerName) {
+    players.push(playerName); // Add player to array
+
+    // Update the player list display
+    const playerList = document.getElementById("playerList");
+    const listItem = document.createElement("li");
+    listItem.className = "list-group-item";
+    listItem.textContent = playerName;
+    playerList.appendChild(listItem);
+
+    // Clear the input field
+    playerNameInput.value = "";
   }
 }
 
+// Generate tournament brackets
 function generateBracket() {
-  const player1 = document.getElementById("player1").value;
-  const player2 = document.getElementById("player2").value;
+  if (players.length < 2) {
+    alert("You need at least 2 players to generate a bracket!");
+    return;
+  }
 
+  // Shuffle players array
+  const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+
+  // Create matchups
+  const matchups = [];
+  for (let i = 0; i < shuffledPlayers.length; i += 2) {
+    const player1 = shuffledPlayers[i];
+    const player2 = shuffledPlayers[i + 1] || "BYE"; // Handle odd number of players
+    matchups.push({ player1, player2 });
+  }
+
+  // Display the brackets
   const bracketOutput = document.getElementById("bracketOutput");
   bracketOutput.innerHTML = `
     <h3>Bracket</h3>
-    <p>${player1} vs ${player2}</p>
+    ${matchups
+      .map(
+        (match, index) =>
+          `<p>Match ${index + 1}: ${match.player1} vs ${match.player2}</p>`
+      )
+      .join("")}
   `;
 }
-
-function addRanking() {
-  const playerName = document.getElementById("playerName").value;
-  const playerTime = document.getElementById("playerTime").value;
-
-  const rankingsList = document.getElementById("rankingsList");
-  const newRanking = document.createElement("li");
-  newRanking.className = "list-group-item";
-  newRanking.textContent = `${playerName} - ${playerTime}`;
-  rankingsList.appendChild(newRanking);
-
-  // Save to localStorage
-  const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-  rankings.push({ name: playerName, time: playerTime });
-  localStorage.setItem("rankings", JSON.stringify(rankings));
-}
-
-// Load rankings from localStorage on page load
-window.onload = () => {
-  const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-  const rankingsList = document.getElementById("rankingsList");
-  rankings.forEach((ranking) => {
-    const listItem = document.createElement("li");
-    listItem.className = "list-group-item";
-    listItem.textContent = `${ranking.name} - ${ranking.time}`;
-    rankingsList?.appendChild(listItem);
-  });
-};
