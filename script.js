@@ -1,28 +1,42 @@
-// Store player names in an array
-let players = [];
+// Initialize players array (load from localStorage if it exists)
+let players = JSON.parse(localStorage.getItem("players")) || [];
 
-// Add a player to the list
+// Function to add a player
 function addPlayer(event) {
   event.preventDefault(); // Prevent form submission
   const playerNameInput = document.getElementById("playerName");
   const playerName = playerNameInput.value.trim();
 
   if (playerName) {
-    players.push(playerName); // Add player to array
+    // Add the player to the array
+    players.push(playerName);
+
+    // Save updated players array to localStorage
+    localStorage.setItem("players", JSON.stringify(players));
 
     // Update the player list display
-    const playerList = document.getElementById("playerList");
-    const listItem = document.createElement("li");
-    listItem.className = "list-group-item";
-    listItem.textContent = playerName;
-    playerList.appendChild(listItem);
+    updatePlayerList();
 
     // Clear the input field
     playerNameInput.value = "";
   }
 }
 
-// Generate tournament brackets
+// Function to update the player list display
+function updatePlayerList() {
+  const playerList = document.getElementById("playerList");
+  playerList.innerHTML = ""; // Clear the list
+
+  // Populate the list with players from the array
+  players.forEach((player) => {
+    const listItem = document.createElement("li");
+    listItem.className = "list-group-item";
+    listItem.textContent = player;
+    playerList.appendChild(listItem);
+  });
+}
+
+// Function to generate the bracket
 function generateBracket() {
   if (players.length < 2) {
     alert("You need at least 2 players to generate a bracket!");
@@ -52,3 +66,6 @@ function generateBracket() {
       .join("")}
   `;
 }
+
+// Load player list on page load
+window.onload = updatePlayerList;
