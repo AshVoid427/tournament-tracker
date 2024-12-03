@@ -1,18 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Tracker</title>
-  <!-- Link to your styles.css file (optional) -->
-  <link rel="stylesheet" href="styles.css">
-</head>
 <body>
   <div class="container">
     <h1>Welcome to the Event Tracker!</h1>
-    <p>This is where your tournament brackets, time trials, and trivia will appear.</p>
+    <p>Add players and generate tournament brackets below.</p>
+
+    <!-- Add Player Form -->
+    <form id="addPlayerForm" onsubmit="addPlayer(event)">
+      <input type="text" id="playerName" placeholder="Enter Player Name" class="form-control my-2">
+      <button type="submit" class="btn btn-primary">Add Player</button>
+    </form>
+
+    <!-- Player List -->
+    <h4>Players:</h4>
+    <ul id="playerList" class="list-group mb-4"></ul>
+
+    <!-- Generate Bracket Button -->
+    <button type="button" class="btn btn-success" onclick="generateBracket()">Generate Bracket</button>
+
+    <!-- Bracket Display -->
+    <div id="bracketOutput" class="mt-4"></div>
   </div>
-  <!-- Link to your script.js file -->
   <script src="script.js"></script>
 </body>
-</html>
